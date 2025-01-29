@@ -45,7 +45,6 @@ function SolveGrid(workingGrid){
 
     if(foundSpot){
         //We have found a working spot
-        let workingGridCopy = structuredClone(workingGrid);
 
         for(let j = 1; j < 10; j++){
             //Checking if insert is valid
@@ -59,8 +58,8 @@ function SolveGrid(workingGrid){
 
                 //Square check
             
-            let squareRow = (row - (row % 3)) / 3;
-            let squareCol = (col - (col % 3)) / 3;
+            let squareRow = (row - (row % 3));
+            let squareCol = (col - (col % 3));
 
             let square = [
                 [workingGrid[squareRow][squareCol],workingGrid[squareRow][squareCol + 1],workingGrid[squareRow][squareCol + 2]],
@@ -69,17 +68,15 @@ function SolveGrid(workingGrid){
             
             ];
 
-            //!THIS IS CAUSING THE ISSUE
-            //? when this is commented out the code runs and generates a (wrong) result, but
-            //? if left uncommented the code stops on gen 20
             for(let line of square){
                 if(line.includes(j)) attemptValid = false;
             } 
 
             if(!attemptValid) continue;
 
-            workingGridCopy[row][col] = j;
-            SolveGrid(workingGridCopy);
+            workingGrid[row][col] = j;
+            SolveGrid(workingGrid);
+            workingGrid[row][col] = 0;
         }
     }
 }
