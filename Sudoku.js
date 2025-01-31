@@ -35,15 +35,17 @@ var solvedGrid = [
 ]*/
 
 var workingArray = [1,2,3,4,5,6,7,8,9];
-var isRandom = false;
+var isRandom = true;
 //Grid Generation Variables
-var randomPositionsNum = 0;
+var randomPositionsNum = 3;
 var missingGapsNum = 40;
+
+var pairsToRemove = 50;
 
 function ShuffleArray(inputArray) {
     let inputArrayCopy = structuredClone(inputArray);
     let output = [];
-    for(let i = 0; i < inputArrayCopy.length; i++){
+    for(let i = 0; i < inputArray.length; i++){
         let index = Math.floor(Math.random() * (inputArrayCopy.length));
         output.push(inputArrayCopy[index]);
         inputArrayCopy.splice(index, 1);
@@ -53,12 +55,45 @@ function ShuffleArray(inputArray) {
 }
 
 function GenerateGrid(){
+    //Random positions
+    let usedGridPositions = [];
+    for(let i = 0; i < randomPositionsNum; i++){
+        let coordinates = [Math.floor(Math.random() * 9),Math.floor(Math.random() * 9)];
+        while(usedGridPositions.includes(coordinates)) [Math.floor(Math.random() * 10),Math.floor(Math.random() * 10)];
+        usedGridPositions.push(coordinates);
+        solvedGrid[coordinates[0]][coordinates[1]] = Math.floor(Math.random() * 9) + 1;
+    }
+
     //Filling in rest of grid
 
     if(isRandom) workingArray = ShuffleArray(workingArray);
 
-    console.log(SolveGrid(structuredClone(solvedGrid), isRandom));
+    console.log(`WORKING ARRAY ${workingArray}`);
+    console.log(SolveGrid(structuredClone(solvedGrid), true));
     console.log(JSON.stringify(structuredClone(solvedGrid)));
+
+    //Knocking out random holes
+    usedGridPositions = [];
+    for(let i = 0; i < pairsToRemove; i++){
+        let validAttempt = false;
+        while(!validAttempt){
+            validAttempt = true;
+            //Knocking out area
+            let coordinates = [Math.floor(Math.random() * 9),Math.floor(Math.random() * 9)];
+            while(usedGridPositions.includes(coordinates)) [Math.floor(Math.random() * 10),Math.floor(Math.random() * 10)];
+            usedGridPositions.push(coordinates);
+            solvedGrid[coordinates[0]][coordinates[1]] = 0;
+
+            //Finding the rotational symmetry of the target coordinate
+            let symmetryCoordinates = [8 - coordinates[0], 8 - coordinates[1]];
+            //Check because of center
+            if(!usedGridPositions.includes(symmetryCoordinates)) solvedGrid[symmetryCoordinates[0]][symmetryCoordinates[1]] = 0;
+            console.log(`REMOVAL ${coordinates} ${symmetryCoordinates}`);
+
+            //validAttempt = SolveGrid(solvedGrid, shouldSetSolvedGrid = false);
+            if(!validAttempt) throw new Error("UNSOLVABLE");
+        }
+    }
 }
 
 
@@ -72,7 +107,7 @@ function CheckIfGridFilled(workingGrid){
 
 var iterations = 0;
 
-function SolveGrid(workingGrid, random = false){
+function SolveGrid(workingGrid, random = false, shouldSetSolvedGrid = true){
 
     iterations++;
     console.log(`ITERATION ${iterations}`);
@@ -85,7 +120,7 @@ function SolveGrid(workingGrid, random = false){
     let foundSpot = false;
 
     if(CheckIfGridFilled(workingGrid)) {
-        solvedGrid = workingGrid;
+        if(shouldSetSolvedGrid) solvedGrid = workingGrid;
         return true;
     }
 
