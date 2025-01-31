@@ -1,3 +1,4 @@
+
 //!TEMP
 const grid = [
     [5,0,0,0,7,0,0,8,4],
@@ -66,6 +67,18 @@ function CheckIfGridFilled(workingGrid){
     return true;
 }
 
+function ShuffleArray(inputArray) {
+    let inputArrayCopy = structuredClone(inputArray);
+    let output = [];
+    for(let i = 0; i < inputArrayCopy.length; i++){
+        let index = Math.floor(Math.random() * (inputArrayCopy.length));
+        output.push(inputArrayCopy[index]);
+        inputArrayCopy.splice(index, 1);
+    }
+
+    return output;
+}
+
 function SolveGrid(workingGrid, random = false){
     let row = null, col = null;
     let foundSpot = false;
@@ -90,15 +103,21 @@ function SolveGrid(workingGrid, random = false){
     if(foundSpot){
         //We have found a working spot
 
-        for(let j = 1; j < 10; j++){
+        let workingArray = [1,2,3,4,5,6,7,8,9];
+        if(random) workingArray = ShuffleArray(workingArray)
+
+        for(let j = 0; j < 9; j++){
+
+            let workingItem = workingArray[j];
+
             //Checking if insert is valid
             let attemptValid = true;
                 //Row check
-            if(workingGrid[row].includes(j)) attemptValid = false;
+            if(workingGrid[row].includes(workingItem)) attemptValid = false;
                 //Column check
             
                 let column = [workingGrid[0][col],workingGrid[1][col],workingGrid[2][col],workingGrid[3][col],workingGrid[4][col],workingGrid[5][col],workingGrid[6][col],workingGrid[7][col],workingGrid[8][col]];
-            if(column.includes(j)) attemptValid = false;
+            if(column.includes(workingItem)) attemptValid = false;
 
                 //Square check
             
@@ -113,12 +132,12 @@ function SolveGrid(workingGrid, random = false){
             ];
 
             for(let line of square){
-                if(line.includes(j)) attemptValid = false;
+                if(line.includes(workingItem)) attemptValid = false;
             } 
 
             if(!attemptValid) continue;
 
-            workingGrid[row][col] = j;
+            workingGrid[row][col] = workingItem;
             if(SolveGrid(workingGrid)) return true;
             workingGrid[row][col] = 0;
         }
