@@ -1,4 +1,3 @@
-
 //!TEMP
 const grid = [
     [5,0,0,0,7,0,0,8,4],
@@ -40,21 +39,8 @@ var randomPositionsNum = 0;
 var missingGapsNum = 40;
 
 function GenerateGrid(){
-    //Placing random positions
-    let usedGridCoordinates = [];
-    for(let i = 0; i < randomPositionsNum; i++){
-        //Generate random coordinates
-        let coordinates = [Math.floor(Math.random() * 9),Math.floor(Math.random() * 9)];
-        while(usedGridCoordinates.includes(coordinates)){
-            coordinates = [Math.floor(Math.random() * 9),Math.floor(Math.random() * 9)];
-        }
-        usedGridCoordinates.push(coordinates);
-
-        solvedGrid[coordinates[0]][coordinates[1]] = Math.floor(Math.random() * 9);
-    }
-
     //Filling in rest of grid
-    console.log(SolveGrid(structuredClone(solvedGrid)));
+    console.log(SolveGrid(structuredClone(solvedGrid), false));
     console.log(JSON.stringify(structuredClone(solvedGrid)));
 }
 
@@ -80,6 +66,7 @@ function ShuffleArray(inputArray) {
 }
 
 function SolveGrid(workingGrid, random = false){
+
     let row = null, col = null;
     let foundSpot = false;
 
@@ -102,11 +89,11 @@ function SolveGrid(workingGrid, random = false){
 
     if(foundSpot){
         //We have found a working spot
-
         let workingArray = [1,2,3,4,5,6,7,8,9];
-        if(random) workingArray = ShuffleArray(workingArray)
+        
+        if(random) workingArray = ShuffleArray(workingArray);  // Shuffling numbers randomly
 
-        for(let j = 0; j < 9; j++){
+        for(let j = 0; j < workingArray.length; j++){
 
             let workingItem = workingArray[j];
 
@@ -138,7 +125,7 @@ function SolveGrid(workingGrid, random = false){
             if(!attemptValid) continue;
 
             workingGrid[row][col] = workingItem;
-            if(SolveGrid(workingGrid)) return true;
+            if(SolveGrid(workingGrid, random)) return true;
             workingGrid[row][col] = 0;
         }
     }
