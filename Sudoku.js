@@ -34,24 +34,11 @@ var solvedGrid = [
     [0,0,0,0,0,0,0,0,0]
 ]*/
 
+var workingArray = [1,2,3,4,5,6,7,8,9];
+var isRandom = false;
 //Grid Generation Variables
 var randomPositionsNum = 0;
 var missingGapsNum = 40;
-
-function GenerateGrid(){
-    //Filling in rest of grid
-    console.log(SolveGrid(structuredClone(solvedGrid), false));
-    console.log(JSON.stringify(structuredClone(solvedGrid)));
-}
-
-
-function CheckIfGridFilled(workingGrid){
-    for(let line of workingGrid){
-        if(line.includes(0)) return false
-    }
-
-    return true;
-}
 
 function ShuffleArray(inputArray) {
     let inputArrayCopy = structuredClone(inputArray);
@@ -65,7 +52,34 @@ function ShuffleArray(inputArray) {
     return output;
 }
 
+function GenerateGrid(){
+    //Filling in rest of grid
+
+    if(isRandom) workingArray = ShuffleArray(workingArray);
+
+    console.log(SolveGrid(structuredClone(solvedGrid), isRandom));
+    console.log(JSON.stringify(structuredClone(solvedGrid)));
+}
+
+
+function CheckIfGridFilled(workingGrid){
+    for(let line of workingGrid){
+        if(line.includes(0)) return false
+    }
+
+    return true;
+}
+
+var iterations = 0;
+
 function SolveGrid(workingGrid, random = false){
+
+    iterations++;
+    console.log(`ITERATION ${iterations}`);
+    if(iterations > 100000) {
+        console.log(JSON.stringify(workingGrid));
+        throw new Error("TAKING TOO LONG");
+    }
 
     let row = null, col = null;
     let foundSpot = false;
@@ -89,9 +103,9 @@ function SolveGrid(workingGrid, random = false){
 
     if(foundSpot){
         //We have found a working spot
-        let workingArray = [1,2,3,4,5,6,7,8,9];
+        //workingArray = [1,2,3,4,5,6,7,8,9];
         
-        if(random) workingArray = ShuffleArray(workingArray);  // Shuffling numbers randomly
+        // Shuffling numbers randomly
 
         for(let j = 0; j < workingArray.length; j++){
 
@@ -103,7 +117,7 @@ function SolveGrid(workingGrid, random = false){
             if(workingGrid[row].includes(workingItem)) attemptValid = false;
                 //Column check
             
-                let column = [workingGrid[0][col],workingGrid[1][col],workingGrid[2][col],workingGrid[3][col],workingGrid[4][col],workingGrid[5][col],workingGrid[6][col],workingGrid[7][col],workingGrid[8][col]];
+            let column = [workingGrid[0][col],workingGrid[1][col],workingGrid[2][col],workingGrid[3][col],workingGrid[4][col],workingGrid[5][col],workingGrid[6][col],workingGrid[7][col],workingGrid[8][col]];
             if(column.includes(workingItem)) attemptValid = false;
 
                 //Square check
