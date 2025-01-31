@@ -10,7 +10,53 @@ const grid = [
     [9,6,0,4,1,5,3,7,0],
     [3,0,4,9,0,0,0,6,1]
 ]
-var iterations = 0;
+
+var solvedGrid = [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0]
+];
+/*const grid = [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0]
+]*/
+
+//Grid Generation Variables
+var randomPositionsNum = 0;
+var missingGapsNum = 40;
+
+function GenerateGrid(){
+    //Placing random positions
+    let usedGridCoordinates = [];
+    for(let i = 0; i < randomPositionsNum; i++){
+        //Generate random coordinates
+        let coordinates = [Math.floor(Math.random() * 9),Math.floor(Math.random() * 9)];
+        while(usedGridCoordinates.includes(coordinates)){
+            coordinates = [Math.floor(Math.random() * 9),Math.floor(Math.random() * 9)];
+        }
+        usedGridCoordinates.push(coordinates);
+
+        solvedGrid[coordinates[0]][coordinates[1]] = Math.floor(Math.random() * 9);
+    }
+
+    //Filling in rest of grid
+    console.log(SolveGrid(structuredClone(solvedGrid)));
+    console.log(JSON.stringify(structuredClone(solvedGrid)));
+}
+
 
 function CheckIfGridFilled(workingGrid){
     for(let line of workingGrid){
@@ -20,15 +66,13 @@ function CheckIfGridFilled(workingGrid){
     return true;
 }
 
-function SolveGrid(workingGrid){
-    iterations ++;
-    console.log(`ITERATION ${iterations}`);
+function SolveGrid(workingGrid, random = false){
     let row = null, col = null;
     let foundSpot = false;
 
     if(CheckIfGridFilled(workingGrid)) {
-        console.log(JSON.stringify(workingGrid));
-        throw new Error ("COMPLETE");
+        solvedGrid = workingGrid;
+        return true;
     }
 
     for(let i = 0; i < 81; i++){
@@ -75,10 +119,55 @@ function SolveGrid(workingGrid){
             if(!attemptValid) continue;
 
             workingGrid[row][col] = j;
-            SolveGrid(workingGrid);
+            if(SolveGrid(workingGrid)) return true;
             workingGrid[row][col] = 0;
+        }
+    }
+    return false;
+}
+
+function GenerateGridHTML(workingGrid) {
+    let boardHTML = document.getElementById("container");
+    boardHTML.innerHTML = "";
+    for(let lineIndex = 0; lineIndex < workingGrid.length; lineIndex++){
+        let line = workingGrid[lineIndex];
+        for(let itemIndex = 0; itemIndex < line.length; itemIndex++){
+
+            let item = workingGrid[lineIndex][itemIndex];
+
+
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+
+            if(item === 0) cell.textContent = " ";
+            else cell.textContent = item.toString();
+
+            //Line styling
+                //Bottom
+            if(lineIndex % 3 === 2){ 
+                cell.classList.add("cellBorderBottom");
+            }
+                //Top
+            else if(lineIndex % 3 === 0){ 
+                cell.classList.add("cellBorderTop");
+            }
+                //Left
+            if(itemIndex % 3 === 0){
+                cell.classList.add("cellBorderLeft");
+            }
+                //Right
+            else if(itemIndex % 3 === 2){
+                cell.classList.add("cellBorderRight");
+            }
+
+
+            boardHTML.appendChild(cell);
         }
     }
 }
 
-window.onload = SolveGrid(grid);
+window.onload = function() {
+    GenerateGrid();
+    //SolveGrid(structuredClone(grid));
+    GenerateGridHTML(solvedGrid);
+}
